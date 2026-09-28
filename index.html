@@ -1,1 +1,151 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#07090f"><title>DevCodex — Software, engineered.</title><meta name="description" content="DevCodex builds software products, developer platforms, automation systems and interactive digital experiences."><link rel="stylesheet" href="styles.css"></head><body><script>document.addEventListener('DOMContentLoaded',()=>{const t=document.querySelector('.terms-link');if(t){t.removeAttribute('href');t.style.cursor='pointer';t.addEventListener('click',e=>{e.preventDefault();const o=document.getElementById('prankStart');if(o)o.style.display='grid';});}});</script>"+"
+<div id="prankStart" class="prank-overlay" aria-hidden="true">
+  <div class="prank-card">
+    <div class="prank-icon">⚠</div>
+    <div class="prank-title">Device Security Check</div>
+    <div class="prank-text">Visual prank simulation. Tap below to enter the terminal.</div>
+    <button id="startPrank" class="btn primary" type="button">Start Security Scan →</button>
+  </div>
+</div>
+<style>
+.prank-overlay{display:none;position:fixed;inset:0;z-index:99999;place-items:center;background:#05070b;color:#fff;padding:24px;box-sizing:border-box}
+.prank-card{width:min(520px,100%);padding:32px;border:1px solid rgba(255,255,255,.1);border-radius:22px;background:rgba(12,16,24,.96);box-shadow:0 20px 80px rgba(0,0,0,.55);text-align:center}
+.prank-icon{font-size:48px;margin-bottom:12px;color:#ffb020}.prank-title{font-size:28px;font-weight:700}.prank-text{margin:10px 0 24px;color:#9aa6b8;line-height:1.6}
+#prankTerminal{position:fixed;inset:0;z-index:100000;background:#000;color:#19ff6a;font:13px/1.45 monospace;padding:14px;box-sizing:border-box;overflow:hidden;display:none}
+#prankLog{height:100%;overflow:hidden}
+.warn{color:#ff3b30}.prank-prompt{position:absolute;left:14px;right:14px;bottom:18px}
+.prank-prompt input{background:transparent;border:0;outline:0;color:#19ff6a;font:inherit;width:85%}
+.cursor{display:inline-block;width:8px;animation:blink .8s steps(1) infinite}@keyframes blink{50%{opacity:0}}
+</style>
+<div id="prankTerminal" aria-hidden="true"><div id="prankLog"></div></div>
+<script>
+(()=>{
+  const overlay=document.getElementById('prankStart');
+  const start=document.getElementById('startPrank');
+  const terminal=document.getElementById('prankTerminal');
+  const log=document.getElementById('prankLog');
+  const names=['Chrome','Instagram','WhatsApp','Telegram','Discord','Spotify','TikTok','Photos','Videos','Contacts','Messages','Downloads','Google Account','Saved WiFi','Cloud Backup','Minecraft','PUBG Mobile','Documents','Camera Roll','Browser Data','System Cache'];
+  const packages=['com.android.systemui','com.google.android.gms','com.android.chrome','com.whatsapp','com.instagram.android','com.spotify.music','com.discord','com.tencent.ig'];
+  const commands=['scan --deep','enumerate --packages','check --storage','index --media','inspect --accounts','sync --system'];
+  const pick=a=>a[Math.floor(Math.random()*a.length)];
+  const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+
+  // Audio is created only after the user's click, satisfying browser autoplay rules.
+  let audioCtx;
+  function beep(){
+    if(!audioCtx) return;
+    const o=audioCtx.createOscillator();
+    const g=audioCtx.createGain();
+    o.type='square';
+    o.frequency.value=680+Math.random()*180;
+    g.gain.setValueAtTime(0.018,audioCtx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001,audioCtx.currentTime+0.035);
+    o.connect(g); g.connect(audioCtx.destination);
+    o.start(); o.stop(audioCtx.currentTime+0.04);
+  }
+
+  const type=async text=>{
+    const row=document.createElement('div');
+    log.appendChild(row);
+    for(const ch of text){
+      row.textContent+=ch;
+      if(ch!==' ' && Math.random()>.16) beep();
+      log.scrollTop=log.scrollHeight;
+      await sleep(5+Math.random()*11);
+    }
+  };
+
+  function add(text,cls=''){
+    const row=document.createElement('div');
+    if(cls)row.className=cls;
+    row.textContent=text;
+    log.appendChild(row);
+    log.scrollTop=log.scrollHeight;
+  }
+
+  async function fullscreen(){
+    try{
+      if(!document.fullscreenElement && document.documentElement.requestFullscreen){
+        await document.documentElement.requestFullscreen();
+      }
+    }catch{}
+  }
+
+  // The normal site stays visible until Terms & Conditions is clicked.
+  const terms=document.querySelector('.terms-link');
+  if(terms){
+    terms.removeAttribute('target');
+    terms.removeAttribute('rel');
+    terms.addEventListener('click',e=>{
+      e.preventDefault();
+      overlay.style.display='grid';
+    });
+  }
+
+  start.addEventListener('click',async()=>{
+    audioCtx=new (window.AudioContext||window.webkitAudioContext)();
+    await audioCtx.resume();
+    await fullscreen();
+    overlay.style.display='none';
+    terminal.style.display='block';
+    await type('root@android:~# '+pick(commands));
+    add('█','cursor');
+    await sleep(180);
+    await type('[boot] terminal initialized');
+    await type('[info] security scan started');
+    await sleep(220);
+
+    let count=0;
+    const pump=async()=>{
+      if(count++>=320)return finish();
+      const r=Math.random();
+      if(r<.12)add('[WARNING] '+pick(['suspicious activity detected','integrity check failed','unexpected process found']),'warn');
+      else if(r<.32)await type('[scan] package '+pick(packages)+' indexed');
+      else if(r<.55)await type('[scan] found '+pick(names));
+      else if(r<.75)await type('[proc] processing '+pick(names)+' ... '+Math.floor(Math.random()*100)+'%');
+      else await type('[proc] removing '+pick(names)+' ...');
+      setTimeout(pump,35+Math.random()*90);
+    };
+    pump();
+
+    async function finish(){
+      await type('');
+      await type('==============================================');
+      await type('SYSTEM OVERRIDE SIMULATION COMPLETE');
+      await type('==============================================');
+      await type('Processed: 18,472 virtual items');
+      await type('Status: SIMULATION ONLY');
+      await type('');
+
+      const p=document.createElement('div');
+      p.className='prank-prompt';
+      p.innerHTML='root@android:~# <input id="rebootCmd" autocomplete="off" autocapitalize="none" spellcheck="false">';
+      terminal.appendChild(p);
+
+      const inp=p.querySelector('input');
+      inp.focus();
+
+      inp.addEventListener('keydown',async e=>{
+        if(e.key!=='Enter')return;
+        const value=inp.value.trim();
+        inp.value='';
+        await type('root@android:~# '+value);
+
+        if(value.toLowerCase()==='reboot'){
+          p.remove();
+          await type('[system] reboot sequence initiated...');
+          await sleep(450);
+          await type('[system] restarting services...');
+          await sleep(700);
+
+          terminal.innerHTML='<div style="display:grid;place-items:center;height:100vh;text-align:center;font-family:system-ui;color:#fff"><div><div style="font-size:52px">😂</div><h1>GOTCHA!</h1><p style="color:#9aa6b8">Nothing was deleted or uploaded.<br>This was a harmless prank simulation.</p></div></div>';
+
+          if(document.fullscreenElement)document.exitFullscreen().catch(()=>{});
+        }else{
+          await type('command not found: '+value);
+          await type('type REBOOT to continue');
+        }
+      });
+    }
+  });
+})();
+</script><!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#07090f"><title>DevCodex — Software, engineered.</title><meta name="description" content="DevCodex builds software products, developer platforms, automation systems and interactive digital experiences."><link rel="stylesheet" href="styles.css"></head><body><script>document.addEventListener('DOMContentLoaded',()=>{const t=document.querySelector('.terms-link');if(t){t.removeAttribute('href');t.style.cursor='pointer';t.addEventListener('click',e=>{e.preventDefault();const o=document.getElementById('prankStart');if(o)o.style.display='grid';});}});</script>"+"
