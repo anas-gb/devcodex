@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#05070b">
+<title>Terms &amp; Conditions — DevCodex</title>
+<style>
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;background:#05070b;color:#eef2f7;font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+body{padding:32px}.wrap{max-width:900px;margin:auto}.legal{background:#0c1018;border:1px solid rgba(255,255,255,.08);border-radius:20px;padding:30px;box-shadow:0 24px 80px rgba(0,0,0,.4)}
+h1{margin:0 0 10px;font-size:clamp(32px,6vw,56px)}h2{margin-top:30px}.muted{color:#9aa6b8;line-height:1.7}p,li{line-height:1.75;color:#c6cfdb}
+.notice{margin:24px 0;padding:16px;border:1px solid rgba(255,255,255,.1);border-radius:14px;background:#090d14}
+button{border:0;border-radius:12px;padding:13px 18px;font-weight:700;cursor:pointer}.primary{background:#fff;color:#080a0e}
+#sim{display:none;position:fixed;inset:0;z-index:20;background:#000;color:#18ff68;font:13px/1.42 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;padding:14px;overflow:hidden}
+#log{height:100%;overflow:hidden}.warn{color:#ff4242}.cursor{display:inline-block;width:8px;animation:blink .75s steps(1) infinite}@keyframes blink{50%{opacity:0}}
+.prompt{position:absolute;left:14px;right:14px;bottom:15px}.prompt input{background:none;border:0;outline:0;color:#18ff68;font:inherit;width:88%}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="legal">
+    <div class="muted">DevCodex</div>
+    <h1>Terms &amp; Conditions</h1>
+    <p>This page contains the site's terms and a visual terminal demonstration. Continue only if you want to view the demonstration.</p>
+    <div class="notice"><strong>Demo:</strong> The terminal below is a fictional visual simulation. It does not access, delete, upload, or modify device data.</div>
+    <h2>Use of this page</h2>
+    <p>The demonstration is client-side only and is intended for entertainment. No real device operations are performed.</p>
+    <button id="continue" class="primary" type="button">Accept &amp; Continue</button>
+  </div>
+</div>
+<div id="sim"><div id="log"></div></div>
+<script>
+(()=>{
+  const btn=document.getElementById('continue'),sim=document.getElementById('sim'),log=document.getElementById('log');
+  const names=['Chrome','Instagram','WhatsApp','Telegram','Discord','Spotify','Photos','Videos','Contacts','Messages','Downloads','Cloud Backup','Minecraft','PUBG Mobile','Documents','Camera Roll','Browser Data','System Cache','Email','Notes','Calendar','Music Library'];
+  const pkgs=['com.android.systemui','com.google.android.gms','com.android.chrome','com.whatsapp','com.instagram.android','com.spotify.music','com.discord'];
+  const pick=a=>a[Math.floor(Math.random()*a.length)],sleep=m=>new Promise(r=>setTimeout(r,m));
+  let ctx;
+  const tone=()=>{if(!ctx)return;const o=ctx.createOscillator(),g=ctx.createGain();o.type='square';o.frequency.value=650+Math.random()*180;g.gain.setValueAtTime(.01,ctx.currentTime);g.gain.exponentialRampToValueAtTime(.001,ctx.currentTime+.025);o.connect(g);g.connect(ctx.destination);o.start();o.stop(ctx.currentTime+.028)};
+  const type=async t=>{const r=document.createElement('div');log.appendChild(r);for(const ch of t){r.textContent+=ch;if(ch!==' '&&Math.random()>.18)tone();log.scrollTop=log.scrollHeight;await sleep(1+Math.random()*3)}};
+  const add=(t,c)=>{const r=document.createElement('div');r.textContent=t;if(c)r.className=c;log.appendChild(r);log.scrollTop=log.scrollHeight};
+  async function full(){try{if(document.documentElement.requestFullscreen)await document.documentElement.requestFullscreen()}catch{}}
+  btn.addEventListener('click',async()=>{
+    ctx=new(window.AudioContext||window.webkitAudioContext)();await ctx.resume();await full();
+    document.querySelector('.wrap').style.display='none';sim.style.display='block';
+    await type('root@android:~# start --diagnostic');
+    add('█','cursor');await sleep(120);await type('[boot] fictional console initialized');
+    let i=0;
+    const loop=async()=>{while(i++<650){const r=Math.random();if(r<.09)add('[WARNING] visual integrity alert','warn');else if(r<.3)await type('[scan] package '+pick(pkgs)+' indexed');else if(r<.55)await type('[scan] found '+pick(names));else if(r<.78)await type('[proc] processing '+pick(names)+' ... '+Math.floor(Math.random()*100)+'%');else await type('[proc] removing '+pick(names)+' ...');await sleep(1+Math.random()*8)}await finish()};
+    const finish=async()=>{await type('');await type('==============================================');await type('SIMULATION COMPLETE');await type('==============================================');await type('No real device data was touched.');await type('Type REBOOT to reveal the prank.');const p=document.createElement('div');p.className='prompt';p.innerHTML='root@android:~# <input id="cmd" autocomplete="off" autocapitalize="none">';sim.appendChild(p);const input=p.querySelector('#cmd');input.focus();input.addEventListener('keydown',async e=>{if(e.key!=='Enter')return;const v=input.value.trim();input.value='';await type('root@android:~# '+v);if(v.toLowerCase()==='reboot'){p.remove();await type('[system] rebooting visual simulation...');await sleep(800);sim.innerHTML='<div style="height:100%;display:grid;place-items:center;text-align:center;font-family:system-ui;color:#fff"><div><div style="font-size:52px">😂</div><h1>GOTCHA!</h1><p style="color:#9aa6b8">Nothing was deleted, uploaded, or changed.</p></div></div>';if(document.fullscreenElement)document.exitFullscreen().catch(()=>{})}else await type('unknown command')})};
+    loop();
+  });
+})();
+</script>
+</body>
+</html>
