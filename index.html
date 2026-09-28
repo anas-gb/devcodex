@@ -3,7 +3,7 @@
   <div class="prank-card">
     <div class="prank-icon">⚠</div>
     <div class="prank-title">Device Security Check</div>
-    <div class="prank-text">A fullscreen security scan is ready to begin.</div>
+    <div class="prank-text">Tap below to begin a fullscreen security simulation.</div>
     <button id="startPrank" class="btn primary" type="button">Start Security Scan →</button>
   </div>
 </div>
@@ -25,7 +25,13 @@
   const packages=['com.android.systemui','com.google.android.gms','com.android.chrome','com.whatsapp','com.instagram.android','com.spotify.music','com.discord','com.tencent.ig'];
   const pick=a=>a[Math.floor(Math.random()*a.length)];
   const line=t=>{log.insertAdjacentHTML('beforeend',t+'<br>');log.scrollTop=log.scrollHeight};
-  async function goFull(){try{if(!document.fullscreenElement&&document.documentElement.requestFullscreen)await document.documentElement.requestFullscreen();}catch(e){}}
+  async function goFull(){
+    try{
+      if(!document.fullscreenElement && document.documentElement.requestFullscreen){
+        await document.documentElement.requestFullscreen();
+      }
+    }catch(e){}
+  }
   start.addEventListener('click',async()=>{
     await goFull();
     overlay.style.display='none';
