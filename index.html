@@ -33,9 +33,6 @@
     }catch(e){}
   }
   start.addEventListener('click',async()=>{
-    audioCtx=new(window.AudioContext||window.webkitAudioContext)();
-    await audioCtx.resume();
-
     await goFull();
     overlay.style.display='none';
     terminal.style.display='block';
